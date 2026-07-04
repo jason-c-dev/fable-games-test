@@ -20,9 +20,9 @@ export const PLAYER = {
   slideHeight: 0.65,      // collision height while sliding
 
   // jumping (meters, seconds)
-  jumpVel: 8.4,
-  gravityHeld: 26,        // m/s^2 while rising with jump held
-  gravity: 46,            // otherwise
+  jumpVel: 8.8,
+  gravityHeld: 24,        // m/s^2 while rising with jump held
+  gravity: 44,            // otherwise
   maxFall: 22,
   coyoteFrames: 7,
   bufferFrames: 7,        // input buffer for jump/slide/lane/parry/dash
@@ -94,7 +94,7 @@ export const OBSTACLES = {
   rampBoost: 9.2,         // vy granted when crossing a ramp lip
   rampDepth: 2.0,
   dewR: 0.9,              // collect radius
-  windAccel: 12,          // m/s^2 lateral drift while airborne in a wind zone
+  windAccel: 8,           // m/s^2 lateral drift while airborne in a wind zone
   lanternR: 9,            // light pool radius in the cavern dark
 };
 

@@ -20,6 +20,7 @@ export class Tide {
 
   step(dt) {
     const w = this.world;
+    this.prevD = this.d;
     if (w.finished || w.dead) return;
     const cfg = w.tideCfg;
     const nominal = w.speedAt(w.player.d);

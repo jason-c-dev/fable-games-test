@@ -11,6 +11,44 @@ html, body {
 #ui { position: absolute; inset: 0; pointer-events: none; color: #eaf6e4; }
 #ui * { box-sizing: border-box; }
 
+/* ------------------------------------------------------------------ HUD -- */
+.hud-top {
+  position: absolute; top: 12px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 20px; font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.55);
+}
+.hud-left span, .hud-right span { margin-right: 14px; }
+.hud-right { text-align: right; }
+.hud-right span { margin: 0 0 0 14px; }
+.hud-mid { opacity: 0.85; font-size: 16px; letter-spacing: 2px; }
+#hud-chain { color: #66e0ff; }
+#hud-dash { transition: opacity .2s; }
+.hud-sign {
+  position: absolute; top: 18%; left: 50%; transform: translateX(-50%) scale(0.9);
+  font-size: 26px; font-weight: bold; text-align: center;
+  color: #ffe9a8; text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  opacity: 0; transition: opacity .3s, transform .3s;
+  white-space: nowrap;
+}
+.hud-sign.show { opacity: 1; transform: translateX(-50%) scale(1); }
+.hud-tide {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  width: min(420px, 60vw); height: 10px; border-radius: 5px;
+  background: rgba(10,14,10,0.55); overflow: hidden;
+  outline: 1px solid rgba(255,255,255,0.18);
+}
+.hud-tide-fill { height: 100%; width: 0; transition: width .18s; }
+.hud-tide-label {
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; letter-spacing: 3px; opacity: 0.6;
+}
+.hud-f3 {
+  position: absolute; bottom: 40px; left: 12px;
+  font: 11px monospace; color: #a8ffb0;
+  background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 4px;
+}
+
 #boot-error {
   position: absolute; inset: auto 0 0 0; padding: 12px; z-index: 99;
   background: #300; color: #fbb; font: 12px monospace; white-space: pre-wrap;

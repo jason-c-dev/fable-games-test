@@ -51,6 +51,7 @@ export class Player {
     if (this.state === 'dead') return;
     const dt = STEP;
     const track = world.track;
+    this.prevX = this.x; this.prevY = this.y;   // for render interpolation
 
     // ---- timers ----
     for (const k of ['coyoteT', 'jumpBuf', 'slideBuf', 'dashCd', 'parryT', 'parryLockT', 'stumbleT', 'iframesT', 'fragileT']) {

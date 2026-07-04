@@ -251,9 +251,11 @@ const has = (events, t) => events.some((e) => e.t === t);
   w.step(f.inp(['jump']));
   let maxOff = 0;
   while (w.player.state === 'air') { w.step(f.inp(['jump'])); maxOff = Math.max(maxOff, Math.abs(w.player.x)); }
-  check('wind.drift', maxOff > 0.25, `maxOff=${maxOff.toFixed(2)}`);
+  // drift must be material but stay under a full lane (else wind = forced move)
+  check('wind.drift', maxOff > 0.25 && maxOff < LANES.width, `maxOff=${maxOff.toFixed(2)}`);
   for (let i = 0; i < 20; i++) w.step(f.inp([]));
-  check('wind.recover', Math.abs(w.player.x) < 0.1, `x=${w.player.x.toFixed(2)}`);
+  const nearest = Math.round(w.player.x / LANES.width) * LANES.width;
+  check('wind.recover', Math.abs(w.player.x - nearest) < 0.1, `x=${w.player.x.toFixed(2)}`);
 }
 {
   // input latched through parry hit-stop/slow-mo: jump lands after freeze

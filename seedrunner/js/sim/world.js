@@ -90,6 +90,17 @@ export class World {
     this.player.step(inp, this);
     this.tide.step(STEP);
 
+    // barrier telegraph: glint + sound cue exactly telegraphTime out
+    const p = this.player;
+    const look = this.speedAt(p.d) * SPEED.telegraphTime + 2;
+    for (const it of this.track.itemsInRange(p.d, p.d + look)) {
+      if (it.type === 'barrier' && !it._glinted && !it._done &&
+          (it.d - p.d) / this.speedAt(p.d) <= SPEED.telegraphTime) {
+        it._glinted = true;
+        this.emit('glint', { at: it.d, lane: it.lane });
+      }
+    }
+
     if (this.def.kind === 'endless') {
       if (this.player.d > this.track.length - 260) this._extend();
       if (this.frame % 300 === 0) this.track.trimBefore(this.tide.d);

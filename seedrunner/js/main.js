@@ -1,73 +1,97 @@
-// Boot: Three.js renderer, fixed-timestep 60 Hz sim loop decoupled from
-// rendering with interpolation. The sim never touches Three; Three only draws.
+// Boot: Three renderer + fixed-timestep 60 Hz sim decoupled from drawing
+// with interpolation. The sim never touches Three; Three only draws.
 // Wrapped in boot() from day one — top-level await breaks the IIFE standalone.
 
-import * as THREE from 'three';
 import { STEP } from './config.js';
+import { World } from './sim/world.js';
+import { runById } from './sim/runs.js';
+import { Bot } from './sim/bot.js';
+import { Input } from './core/input.js';
+import { loadGame, saveGame, DEFAULT_SETTINGS, freshProgress } from './core/save.js';
+import { Renderer } from './render/renderer.js';
+import { Hud } from './ui/hud.js';
 
 function boot() {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.getElementById('game').appendChild(renderer.domElement);
+  const uiRoot = document.getElementById('ui');
+  const renderer = new Renderer(document.getElementById('game'), uiRoot);
+  const input = new Input();
+  input.attach(window);
 
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1a2b18);
-  scene.fog = new THREE.Fog(0x1a2b18, 20, 90);
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 300);
-  camera.position.set(0, 3, 7);
-  camera.lookAt(0, 1, 0);
+  const saved = loadGame();
+  const settings = { ...DEFAULT_SETTINGS, ...(saved?.settings || {}) };
+  const progress = { ...freshProgress(), ...(saved?.progress || {}) };
+  if (settings.keys) input.bindings = { ...input.bindings, ...settings.keys };
+  renderer.shakeScale = settings.shake;
+  renderer.reducedMotion = settings.reducedMotion;
+  renderer.props.signLabeler = (verb) => input.labelFor(verb);
+  input.onDeviceChange = () => renderer.props.refreshSigns();
 
-  const hemi = new THREE.HemisphereLight(0xcfe8bd, 0x2a3d22, 1.1);
-  scene.add(hemi);
-  const sun = new THREE.DirectionalLight(0xfff2cc, 1.4);
-  sun.position.set(4, 8, 3);
-  scene.add(sun);
+  const hud = new Hud(uiRoot, input);
+  const persist = () => saveGame({ settings, progress });
 
-  // placeholder: a spinning Sun Seed over a ground slab
-  const seed = new THREE.Mesh(
-    new THREE.IcosahedronGeometry(1, 0),
-    new THREE.MeshStandardMaterial({ color: 0xffd76a, emissive: 0x7a5a10, flatShading: true }),
-  );
-  seed.position.y = 1.4;
-  scene.add(seed);
-  scene.add(new THREE.Mesh(
-    new THREE.BoxGeometry(8, 0.4, 8),
-    new THREE.MeshStandardMaterial({ color: 0x3f5d33, flatShading: true }),
-  ));
+  let world = null;
+  let bot = null;
 
-  window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+  function startRun(id, opts = {}) {
+    const def = runById(id);
+    world = new World(def, opts);
+    bot = opts.bot ? new Bot(world, { demo: true, reaction: 0.12 }) : null;
+    hud.setRunName(def.name.toUpperCase());
+    return world;
+  }
+
+  // URL params drive QA boots: ?run=gym&seed=7&bot=1
+  const params = new URLSearchParams(location.search);
+  startRun(params.get('run') || 'gym', {
+    seed: params.has('seed') ? Number(params.get('seed')) : undefined,
+    bot: params.has('bot'),
   });
 
-  // fixed-timestep loop: sim steps at 60 Hz, draw interpolates
-  let acc = 0, last = performance.now(), frame = 0, fpsAvg = 60;
-  let prevRot = 0, rot = 0;
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'F3') { e.preventDefault(); hud.toggleF3(); }
+    if (e.code === 'KeyR' && world && (world.dead || world.finished)) {
+      startRun(world.def.id, { bot: !!bot });
+    }
+  });
+
+  // ---- main loop ----
+  let acc = 0, last = performance.now(), fpsAvg = 60, t = 0;
   function tick() {
     requestAnimationFrame(tick);
     const now = performance.now();
     const dtMs = Math.min(now - last, 100);
     last = now;
+    const dtFrames = Math.min(dtMs / (1000 / 60), 3);
+    t += dtMs / 1000;
+
     acc += dtMs / 1000;
     let steps = 0;
     while (acc >= STEP && steps < 4) {
-      prevRot = rot;
-      rot += 0.02;
-      frame++;
+      const inp = bot ? bot.step() : input.poll();
+      world.step(inp);
+      for (const ev of world.events) {
+        renderer.handleEvent(ev, world);
+        hud.handleEvent(ev, world);
+      }
       acc -= STEP;
       steps++;
     }
     if (steps === 4) acc = 0;
-    seed.rotation.y = prevRot + (rot - prevRot) * (acc / STEP);
-    renderer.render(scene, camera);
+
+    renderer.draw(world, acc / STEP, dtFrames, t);
+    hud.update(world, dtFrames, fpsAvg, renderer);
     fpsAvg = fpsAvg * 0.95 + (1000 / Math.max(dtMs, 0.01)) * 0.05;
   }
   tick();
 
   // hooks for headless QA
-  window.SR = { renderer, scene, camera, get frame() { return frame; }, get fps() { return fpsAvg; } };
+  window.SR = {
+    renderer, input, hud, startRun, settings, progress, persist,
+    get world() { return world; },
+    get bot() { return bot; },
+    get fps() { return fpsAvg; },
+    get frame() { return world?.frame ?? 0; },
+  };
 }
 
 try { boot(); } catch (err) {
