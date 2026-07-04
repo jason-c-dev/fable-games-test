@@ -94,6 +94,23 @@ export class Input {
     return held;
   }
 
+  // mark a verb as already-seen so the next poll doesn't fire its edge
+  // (e.g. the Escape that resumed from pause must not immediately re-pause)
+  swallow(verb) { this.prev[verb] = true; }
+
+  // gamepad-only edges for menu navigation — keyboard menus are driven by
+  // keydown events, so polling kb verbs here would double every press
+  padPoll() {
+    const pad = this._padState();
+    const pressed = {};
+    this._prevPad ||= {};
+    for (const verb of VERBS) {
+      pressed[verb] = !!pad[verb] && !this._prevPad[verb];
+      this._prevPad[verb] = !!pad[verb];
+    }
+    return { pressed };
+  }
+
   poll() {
     const held = {}, pressed = {};
     const pad = this._padState();

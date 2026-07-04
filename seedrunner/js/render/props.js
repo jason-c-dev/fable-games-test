@@ -233,7 +233,7 @@ Props.prototype._updateStatics = function (world, camD, t) {
   const track = world.track;
   const want = new Set();
   for (const it of track.itemsInRange(camD - VIEW_BACK, camD + VIEW_AHEAD, 60)) {
-    if (it.type !== 'sign' && it.type !== 'checkpoint' && it.type !== 'shrine') continue;
+    if (it.type !== 'sign' && it.type !== 'checkpoint' && it.type !== 'shrine' && it.type !== 'npc') continue;
     want.add(it);
     if (!this.statics.has(it)) this.statics.set(it, this._buildStatic(it, track));
   }
@@ -248,16 +248,71 @@ Props.prototype._updateStatics = function (world, camD, t) {
     } else if (it.type === 'shrine') {
       obj.children[2].rotation.y = t * 0.8;
       obj.children[2].position.y = obj.userData.baseY + 2.6 + Math.sin(t * 2) * 0.1;
+    } else if (it.type === 'npc') {
+      // cheer: hop and wave
+      const ph = t * 6 + it.d;
+      obj.userData.body.position.y = obj.userData.baseY + Math.abs(Math.sin(ph)) * 0.3;
+      obj.userData.body.rotation.z = Math.sin(ph * 0.7) * 0.12;
     }
   }
 };
 
 Props.prototype._buildStatic = function (it, track) {
   const g = new THREE.Group();
-  const p = worldPos(it.d, it.type === 'sign' ? laneX(it.lane) * 0.35 + (it.lane <= 0 ? -3.9 : 3.9) : 0, 0, this._p);
+  const off = it.type === 'sign' ? laneX(it.lane) * 0.35 + (it.lane <= 0 ? -3.9 : 3.9)
+    : it.type === 'npc' ? (it.lane <= 0 ? -4.6 : 4.6) : 0;
+  const p = worldPos(it.d, off, 0, this._p);
   g.position.set(p[0], p[1], p[2]);
-  g.rotation.y = -headingAt(it.d);
+  g.rotation.y = -headingAt(it.d) + (it.type === 'npc' ? (it.lane <= 0 ? Math.PI / 2 : -Math.PI / 2) : 0);
   const std = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, flatShading: true, ...extra });
+
+  if (it.type === 'npc') {
+    const body = new THREE.Group();
+    const kind = it.kind || 'moss';
+    if (kind === 'moss') {
+      body.add(mesh(new THREE.IcosahedronGeometry(0.5, 0), std(0x4d8a3a)));
+      addEyes(body, 0.34, 0.18);
+    } else if (kind === 'shell') {
+      const dome = mesh(new THREE.SphereGeometry(0.6, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2), std(0x8a6a3c));
+      body.add(dome);
+      addEyes(body, 0.4, 0.1);
+    } else if (kind === 'burr') {
+      body.add(mesh(new THREE.IcosahedronGeometry(0.42, 0), std(0x6e4a2a)));
+      for (let i = 0; i < 6; i++) {
+        const s = mesh(new THREE.ConeGeometry(0.08, 0.3, 4), std(0x3c2a1a));
+        s.position.setFromSphericalCoords(0.45, Math.acos(1 - 2 * ((i + 0.5) / 6)), i * 2.4);
+        s.lookAt(s.position.clone().multiplyScalar(2));
+        s.rotateX(Math.PI / 2);
+        body.add(s);
+      }
+      addEyes(body, 0.3, 0.14);
+    } else if (kind === 'wisp') {
+      const orb = mesh(new THREE.SphereGeometry(0.32, 8, 6), new THREE.MeshBasicMaterial({ color: 0xbfe8ff, transparent: true, opacity: 0.85 }));
+      orb.position.y = 0.7;
+      body.add(orb);
+    } else if (kind === 'grub') {
+      const seg = mesh(new THREE.CapsuleGeometry(0.35, 0.5, 4, 8), std(0xb08a5a));
+      seg.rotation.z = Math.PI / 2;
+      body.add(seg);
+      addEyes(body, 0.45, 0.2);
+    } else if (kind === 'bramble') {
+      // the fallen General — wilted, watching, at peace
+      const trunk = mesh(new THREE.CylinderGeometry(0.22, 0.34, 1.7, 6), std(0x3c2a34));
+      trunk.position.y = 0.5;
+      trunk.rotation.z = 0.18;
+      const crown = mesh(new THREE.IcosahedronGeometry(0.4, 0), std(0x6e3a52));
+      crown.position.set(0.16, 1.45, 0);
+      const sprout = mesh(new THREE.ConeGeometry(0.08, 0.3, 5), std(0x5fb04a));
+      sprout.position.set(0.16, 1.75, 0);
+      body.add(trunk, crown, sprout);
+    }
+    body.position.y = kind === 'wisp' ? 0.4 : 0.45;
+    g.userData.body = body;
+    g.userData.baseY = body.position.y;
+    g.add(body);
+    this.scene.add(g);
+    return g;
+  }
 
   if (it.type === 'sign') {
     const post = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.13, 2.2, 6), std(0x6b4a30));
@@ -340,6 +395,17 @@ Props.prototype._textSprite = function (text, color) {
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w / 64 * 0.85, 0.85), mat);
   return mesh;
 };
+
+function mesh(geo, mat) { return new THREE.Mesh(geo, mat); }
+
+function addEyes(body, y, spread) {
+  const m = new THREE.MeshStandardMaterial({ color: 0x1a2018, flatShading: true });
+  for (const s of [-1, 1]) {
+    const e = mesh(new THREE.SphereGeometry(0.05, 6, 6), m);
+    e.position.set(s * spread, y, 0.38);
+    body.add(e);
+  }
+}
 
 function wedgeGeo() {
   // a ramp wedge: rises from 0 to ~1.1 over rampDepth

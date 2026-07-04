@@ -73,6 +73,19 @@ export const RUNS = [
     speedStart: 13, speedEnd: 16.5,
     tide: { creepBase: 0.13, creepPerTier: 0.06 },
   },
+  {
+    id: 'run6', name: 'Sowing Run VI — The Last Surge', kind: 'campaign', biome: 'wastes',
+    world: 3, seedName: 'the Last Seed', finale: true,
+    chunks: [
+      'pad-20', 'f-open', 'w-gauntlet-1', 'w-thorn-field', 'w-mix-3', 'f-surge',
+      ['c-parry-glow', 'cavern'], ['c-dark-weave', 'cavern'], ['c-mix', 'cavern'], ['cp-25', 'cavern'],
+      ['f-surge', 'cavern'], ['m-seed', 'cloudline'], ['l-wind-gap', 'cloudline'],
+      ['l-wind-1', 'cloudline'], ['l-gap-span', 'cloudline'], ['f-surge', 'cloudline'],
+      ['m-weave', 'meadow'], ['m-parry-1', 'meadow'], ['m-mix-2', 'meadow'], 'f-parade', 'finish-45',
+    ],
+    speedStart: 14, speedEnd: 18,
+    tide: { creepBase: 0.16, creepPerTier: 0.07, startGap: 22 },
+  },
 ];
 
 // endless: verified-chunk composition, biome rotation, no immediate repeats

@@ -461,6 +461,51 @@ defineChunk({
   `,
 });
 
+// ----------------------------------------------------------------- finale --
+defineChunk({
+  id: 'f-open', biome: 'wastes', tiers: [3, 5], len: 60, noEndless: true, lines: `
+    sign C 14 text=The_Tide's_LAST_SURGE_—_run,_Pip!
+    barrier C 26
+    dew C 29..35 step=2
+    block L 44
+    block C 47
+    dew R 40..50 step=2.5
+  `,
+});
+defineChunk({
+  id: 'f-surge', biome: 'wastes', tiers: [3, 5], len: 40, noEndless: true, lines: `
+    surge C 8 m=7
+    sign C 10 text=It_surges!_BLOOM_it_back!
+    barrier C 24
+    dew C 27..33 step=2
+  `,
+});
+defineChunk({
+  id: 'f-parade', biome: 'meadow', tiers: [3, 5], len: 100, noEndless: true, lines: `
+    sign C 10 text=The_whole_kingdom_cheers_you_home!
+    npc L 14 kind=moss
+    npc R 16 kind=shell
+    npc L 22 kind=wisp
+    npc R 24 kind=moss
+    npc L 30 kind=burr
+    npc R 32 kind=grub
+    npc L 38 kind=moss
+    npc R 40 kind=wisp
+    npc L 46 kind=shell
+    npc R 48 kind=moss
+    npc L 54 kind=burr
+    npc R 56 kind=wisp
+    npc L 62 kind=grub
+    npc R 64 kind=shell
+    npc L 70 kind=moss
+    npc R 72 kind=moss
+    npc L 80 kind=bramble
+    dew L 12..88 step=4
+    dew C 14..90 step=4
+    dew R 16..92 step=4
+  `,
+});
+
 // -------------------------------------------------------------------- gym --
 // The Feel Gym: one straight of every verb. Used by probes, the P2 feel
 // pass, and kept shipping as a hidden practice run.

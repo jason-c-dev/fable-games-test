@@ -103,6 +103,11 @@ export class World {
         it._glinted = true;
         this.emit('glint', { at: it.d, lane: it.lane });
       }
+      // scripted Tide surges (the finale chase)
+      if (it.type === 'surge' && !it._done && p.d >= it.d) {
+        it._done = true;
+        this.tide.surge(it.m ?? 6);
+      }
     }
 
     if (this.def.kind === 'endless') {

@@ -10,6 +10,7 @@ import { Input } from './core/input.js';
 import { loadGame, saveGame, DEFAULT_SETTINGS, freshProgress } from './core/save.js';
 import { Renderer } from './render/renderer.js';
 import { Hud } from './ui/hud.js';
+import { Flow } from './ui/screens.js';
 
 function boot() {
   const uiRoot = document.getElementById('ui');
@@ -21,36 +22,61 @@ function boot() {
   const settings = { ...DEFAULT_SETTINGS, ...(saved?.settings || {}) };
   const progress = { ...freshProgress(), ...(saved?.progress || {}) };
   if (settings.keys) input.bindings = { ...input.bindings, ...settings.keys };
-  renderer.shakeScale = settings.shake;
-  renderer.reducedMotion = settings.reducedMotion;
+  const persist = () => saveGame({ settings, progress });
+
+  const applySettings = () => {
+    renderer.shakeScale = settings.shake;
+    renderer.reducedMotion = settings.reducedMotion;
+    audio?.applySettings?.();
+  };
+
   renderer.props.signLabeler = (verb) => input.labelFor(verb);
   input.onDeviceChange = () => renderer.props.refreshSigns();
 
   const hud = new Hud(uiRoot, input);
-  const persist = () => saveGame({ settings, progress });
 
   let world = null;
   let bot = null;
+  let audio = null;        // wired in the audio pass
 
-  function startRun(id, opts = {}) {
+  const flow = new Flow({ uiRoot, input, settings, progress, persist });
+
+  flow.onStartRun = (id, opts = {}) => {
     const def = runById(id);
-    world = new World(def, opts);
+    world = new World(def, { seed: opts.seed, checkpoint: opts.checkpoint });
     bot = opts.bot ? new Bot(world, { demo: true, reaction: 0.12 }) : null;
     hud.setRunName(def.name.toUpperCase());
-    return world;
-  }
+    hud.root.hidden = false;
+    ambient = false;
+  };
+  // behind menus: a silent bot ambles the endless Seedway
+  let ambient = false;
+  const startAmbient = () => {
+    world = new World(runById('endless'), { seed: 42 });
+    bot = new Bot(world, { demo: true, reaction: 0.12 });
+    hud.root.hidden = true;
+    ambient = true;
+  };
+  flow.onQuitRun = startAmbient;
+  flow.onSettingsChanged = applySettings;
+  applySettings();
+  startAmbient();
 
-  // URL params drive QA boots: ?run=gym&seed=7&bot=1
+  // URL params drive QA boots: ?run=gym&seed=7&bot=1 (skips the title)
   const params = new URLSearchParams(location.search);
-  startRun(params.get('run') || 'gym', {
-    seed: params.has('seed') ? Number(params.get('seed')) : undefined,
-    bot: params.has('bot'),
-  });
+  if (params.has('run')) {
+    flow.worldDef = runById(params.get('run'));
+    flow.setMode('run');
+    flow.onStartRun(params.get('run'), {
+      seed: params.has('seed') ? Number(params.get('seed')) : undefined,
+      bot: params.has('bot'),
+    });
+  }
 
   window.addEventListener('keydown', (e) => {
     if (e.code === 'F3') { e.preventDefault(); hud.toggleF3(); }
-    if (e.code === 'KeyR' && world && (world.dead || world.finished)) {
-      startRun(world.def.id, { bot: !!bot });
+    if (e.code === 'KeyR' && flow.mode === 'run' && world && (world.dead || world.finished)) {
+      flow.onStartRun(world.def.id, { bot: !!bot });
     }
   });
 
@@ -64,33 +90,53 @@ function boot() {
     const dtFrames = Math.min(dtMs / (1000 / 60), 3);
     t += dtMs / 1000;
 
-    acc += dtMs / 1000;
-    let steps = 0;
-    while (acc >= STEP && steps < 4) {
-      const inp = bot ? bot.step() : input.poll();
-      world.step(inp);
-      for (const ev of world.events) {
-        renderer.handleEvent(ev, world);
-        hud.handleEvent(ev, world);
-      }
-      acc -= STEP;
-      steps++;
-    }
-    if (steps === 4) acc = 0;
+    const simActive = world && (flow.running || flow.mode !== 'paused');
+    if (!flow.running) input.poll();   // keep kb edge state fresh across mode changes
 
-    renderer.draw(world, acc / STEP, dtFrames, t);
-    hud.update(world, dtFrames, fpsAvg, renderer);
+    if (simActive) {
+      acc += dtMs / 1000;
+      let steps = 0;
+      while (acc >= STEP && steps < 4) {
+        const inp = flow.running && !bot ? input.poll() : bot ? bot.step() : { held: {}, pressed: {} };
+        world.step(inp);
+        if (flow.running && !bot && inp.pressed.pause) flow.togglePause(true);
+        for (const ev of world.events) {
+          renderer.handleEvent(ev, world);
+          if (flow.running) {
+            hud.handleEvent(ev, world);
+            audio?.handleEvent?.(ev, world);
+          }
+        }
+        acc -= STEP;
+        steps++;
+      }
+      if (steps === 4) acc = 0;
+      // ambient background world: restart quietly if the Tide catches it
+      if (ambient && !flow.running && (world.dead || world.finished)) startAmbient();
+    } else {
+      acc = 0;
+    }
+
+    if (world) {
+      renderer.draw(world, simActive ? acc / STEP : 1, dtFrames, t);
+      hud.update(world, dtFrames, fpsAvg, renderer);
+    }
+    flow.update(dtFrames, world);
+    audio?.update?.(world, flow.mode, dtFrames);
+
     fpsAvg = fpsAvg * 0.95 + (1000 / Math.max(dtMs, 0.01)) * 0.05;
   }
   tick();
 
   // hooks for headless QA
   window.SR = {
-    renderer, input, hud, startRun, settings, progress, persist,
+    renderer, input, hud, flow, settings, progress, persist,
     get world() { return world; },
     get bot() { return bot; },
     get fps() { return fpsAvg; },
     get frame() { return world?.frame ?? 0; },
+    set audio(a) { audio = a; },
+    get audio() { return audio; },
   };
 }
 
