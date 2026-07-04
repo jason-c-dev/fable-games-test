@@ -158,6 +158,37 @@ if (!filter || 'dpr-aspect-matrix-fps'.includes(filter)) {
   }
 }
 
+if (!filter || 'attract-demo'.includes(filter)) {
+  // title idle -> attract demo; the real bot must clear run 1 and return
+  const page = await fresh();
+  await page.evaluate(() => { window.SR.flow.idleT = 60 * 13.5; });
+  await page.waitForTimeout(1500);
+  let mode = await page.evaluate(() => window.SR.flow.mode);
+  check('attract.starts', mode === 'attract' || mode === 'title', `mode=${mode}`);
+  for (let i = 0; i < 10 && mode !== 'attract'; i++) { await page.waitForTimeout(500); mode = await page.evaluate(() => window.SR.flow.mode); }
+  check('attract.running-run1', await page.evaluate(() => window.SR.flow.mode === 'attract' && window.SR.world.def.id === 'run1' && !!window.SR.bot));
+  // watch the whole demo: bot must finish (win) and flow must return to title
+  let final = null;
+  for (let i = 0; i < 140; i++) {
+    await page.waitForTimeout(1000);
+    final = await page.evaluate(() => ({ mode: window.SR.flow.mode, fin: window.SR.world?.finished, dead: window.SR.world?.dead, d: window.SR.world?.player.d | 0 }));
+    if (final.mode === 'title') break;
+    if (final.dead) break;
+  }
+  check('attract.clears-run1', final.mode === 'title' && !final.dead, JSON.stringify(final));
+  check('attract.no-errors', page.errors.length === 0, page.errors.slice(0, 3).join(' | '));
+  await page.close();
+}
+
+if (!filter || 'fps-busiest'.includes(filter)) {
+  // 1080p in the finale's dense stretch: fps must hold 60
+  const page = await fresh(BASE + '?run=run6&bot=1&seed=3', { viewport: { width: 1920, height: 1080 } });
+  await page.waitForTimeout(30000);   // mid-run: gauntlets + surges
+  const st = await page.evaluate(() => ({ fps: window.SR.fps, draws: window.SR.renderer.drawCalls, d: window.SR.world.player.d | 0 }));
+  check('fps.1080p-busiest', st.fps >= 58, `fps=${st.fps.toFixed(0)} draws=${st.draws} d=${st.d}`);
+  await page.close();
+}
+
 if (!filter || 'audio-scenes'.includes(filter)) {
   // 60s automated play across biomes: scenes must switch, console must stay clean
   const page = await fresh(BASE + '?run=run5&bot=1&seed=3');
