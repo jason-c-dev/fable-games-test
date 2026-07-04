@@ -4,19 +4,21 @@
 [![Play on GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-brightgreen?logo=github)](https://jason-c-dev.github.io/fable-games-test/)
 [![Built by Claude Fable 5](https://img.shields.io/badge/built%20by-Claude%20Fable%205-b45309)](https://www.anthropic.com/claude/fable)
 [![PixiJS](https://img.shields.io/badge/PixiJS-8.19-e91e63)](https://pixijs.com)
+[![Three.js](https://img.shields.io/badge/Three.js-r185-049ef4)](https://threejs.org)
 [![Tone.js](https://img.shields.io/badge/Tone.js-15.5-6f42c1)](https://tonejs.github.io)
-[![QA](https://img.shields.io/badge/QA-111%20checks%20passing-brightgreen)](#qa)
+[![QA](https://img.shields.io/badge/QA-891%20checks%20passing-brightgreen)](#qa)
 [![Assets](https://img.shields.io/badge/external%20assets-0-blue)](#fable-games-test)
 
-Two complete browser platformers, two generations apart, built entirely by
-Claude from a pair of prompts. No external assets anywhere — every sprite,
-tile, sound and song in both games is generated in code.
+Three complete browser games — a trilogy, three generations apart, built
+entirely by Claude from three prompts: a 16-bit platformer, an HD
+action-platformer, and a 3D lane-runner finale. No external assets anywhere —
+every sprite, polygon, sound and song in all three games is generated in code.
 
 | | Play | Source | Prompt |
 |---|---|---|---|
 | 🌱 **Sprout Kingdom** | [play it](https://jason-c-dev.github.io/fable-games-test/sprout-kingdom/) | [`sprout-kingdom/`](sprout-kingdom/) | [`platformer-prompt.md`](sprout-kingdom/platformer-prompt.md) |
 | 🗡️ **Sprout Kingdom: Overgrown** | [play it](https://jason-c-dev.github.io/fable-games-test/overgrown/) | [`overgrown/`](overgrown/) | [`platformer2-prompt.md`](overgrown/platformer2-prompt.md) |
-| 🌰 **Sprout Kingdom: Seedrunner** | *generation 3 — spec'd, build pending* | [`seedrunner/`](seedrunner/) | [`runner3-prompt.md`](seedrunner/runner3-prompt.md) · [build plan](seedrunner/PLAN.md) |
+| 🌰 **Sprout Kingdom: Seedrunner** | [play it](https://jason-c-dev.github.io/fable-games-test/seedrunner/) | [`seedrunner/`](seedrunner/) | [`runner3-prompt.md`](seedrunner/runner3-prompt.md) · [build plan](seedrunner/PLAN.md) |
 
 ---
 
@@ -69,41 +71,83 @@ Bramble where parry timing is the only way through.
 F beam, Q heal (Up+Q burst), Esc pause, F3 debug. Gamepad supported, keys
 remappable in Settings.
 
+## 🌰 Sprout Kingdom: Seedrunner (the finale)
+
+<p>
+<a href="https://jason-c-dev.github.io/fable-games-test/seedrunner/"><img src="media/sr-title.gif" width="400" alt="Seedrunner title — click to play"></a>
+<a href="https://jason-c-dev.github.io/fable-games-test/seedrunner/"><img src="media/sr-play.gif" width="400" alt="Seedrunner gameplay — click to play"></a>
+<br><sup>▶ click either to play</sup>
+</p>
+
+The trilogy closer jumps to 3D: a Three.js lane-runner where Pip re-sows the
+six Sun Seeds down the old Seedways with the **Rot Tide** — a crawling wall
+of dark growth whose distance *is* the health bar — always surging behind.
+Low-poly procedural everything: the track bends along an analytic spline,
+obstacles and scenery are instanced primitives, Pip is a rigged primitive
+figure with squash-and-stretch and a fluttering leaf cape, and the four
+biomes are fog-graded palettes (Cavern darkness with lantern pools, Cloudline
+wind that bends your jumps mid-air, Bramble Wastes rot-barrier gauntlets).
+
+The signature move returns one last time as the **bloom parry**: rot barriers
+telegraph with a glint and a chime, and a well-timed press shatters them,
+slows time, banks dew, and shoves the Tide back. Six campaign Sowing Runs
+(fixed-seed, hand-authored from verified track chunks) build to a scripted
+finale chase with the whole trilogy cast cheering the final stretch, a
+closing cutscene and credits; an endless mode composes the same verified
+chunks procedurally with a daily seed. The music is four-layer adaptive
+Tone.js — percussion and counter-melody follow your pace, and a dedicated
+panic layer rides the Tide's proximity.
+
+**Controls:** ←/→ or A/D switch lanes, Space jump (hold for height), ↓/S
+slide, Shift/C dash, X/K bloom parry, Esc pause, F3 perf overlay. Gamepad
+supported, keys remappable in Settings.
+
 ## How they differ
 
-| | Sprout Kingdom | Overgrown |
-|---|---|---|
-| Rendering | Canvas 2D, 16-bit pixel art | PixiJS v8 WebGL, HD vector-style, lighting + post FX |
-| Animation | Frame-flip sprites | Skeletal rigs, squash & stretch, procedural secondary motion |
-| Audio | WebAudio chiptune | Tone.js adaptive layered themes, beat-quantized stingers |
-| Movement | Run, jump, spin-hop, glide | + dash, wall-jump, ledge-grab, down-plunge pogo, swim |
-| Combat | Stomps and shells | Sword combos, parry, ranged beam, specials |
-| Health | Power-size tiers | Hearts + Sap Gauge |
-| Progression | Score, lives, secret exits | + upgrade shrines, best times, relics |
-| Dependencies | None | PixiJS + Tone.js, vendored (no CDN, no build) |
-| Sim/QA | Reachability verifier + browser tests | + 86 headless probes that drive the real simulation |
-| Code | ~6.2k lines | ~10.2k lines |
+| | Sprout Kingdom | Overgrown | Seedrunner |
+|---|---|---|---|
+| Rendering | Canvas 2D, 16-bit pixel art | PixiJS v8 WebGL, HD vector-style, lighting + post FX | Three.js WebGL, low-poly 3D, fog-graded biomes, fake-bloom glows |
+| Animation | Frame-flip sprites | Skeletal rigs, squash & stretch, procedural secondary motion | Procedural rig poses per sim state, cape/cap secondary motion |
+| Audio | WebAudio chiptune | Tone.js adaptive layered themes, beat-quantized stingers | + a panic layer wired to the Rot Tide's distance |
+| Movement | Run, jump, spin-hop, glide | + dash, wall-jump, ledge-grab, down-plunge pogo, swim | Auto-run: lane switch, hold-jump, slide-cancel, i-frame dash |
+| Combat | Stomps and shells | Sword combos, parry, ranged beam, specials | One verb, perfected: the bloom parry |
+| Health | Power-size tiers | Hearts + Sap Gauge | The Tide's distance is the health bar |
+| Progression | Score, lives, secret exits | + upgrade shrines, best times, relics | Six Sowing Runs, checkpoints, endless mode with daily seed |
+| Dependencies | None | PixiJS + Tone.js, vendored (no CDN, no build) | Three.js + Tone.js, vendored (no CDN, no build) |
+| Sim/QA | Reachability verifier + browser tests | + 86 headless probes that drive the real simulation | + a reaction-limited bot that must no-hit every chunk at every speed |
+| Code | ~6.2k lines | ~10.2k lines | ~5.4k lines |
 
-Both ship with their own headless QA: a level-reachability verifier tuned to
-each game's movement physics, Playwright browser flows, and focused
-mechanics tests. Overgrown adds "reality probes" that script the actual
-player through wall-jump shafts, dash gaps, updrafts and all four boss
-fights — every level in both games is machine-verified completable.
+All three ship with their own headless QA: verifiers tuned to each game's
+movement physics, Playwright browser flows, and focused mechanics tests.
+Overgrown added "reality probes" that script the actual player through its
+hardest moves; Seedrunner goes one further — its chunk verifier has no
+physics model of its own at all, it plays every authored chunk in the real
+sim with a bot capped at human reaction speed, entered from every lane at
+every speed tier it can appear at (696 playthroughs), so the verifier and
+the game cannot drift apart. Every level in all three games is
+machine-verified completable.
 
 ## The experiment: Fable 5 at `xhigh`
 
-Both games were built by [Claude Fable 5](https://www.anthropic.com/claude/fable)
+All three games were built by [Claude Fable 5](https://www.anthropic.com/claude/fable)
 (`claude-fable-5`) running in Claude Code on an always-on Mac mini, reasoning
-effort set to **`xhigh`** (one tier below the maximum), working largely
-autonomously from the two prompts in this repo. Token figures below are read
-directly from the project's session logs (`~/.claude/projects/.../*.jsonl`),
-which record the API-metered usage of every turn.
+effort set to **`xhigh`** (one tier below the maximum; the harness setting —
+effort isn't recorded in the logs), working largely autonomously from the
+three prompts in this repo. Token figures below are read directly from the
+project's session logs (`~/.claude/projects/.../*.jsonl`), which record the
+API-metered usage of every turn, each measured at its own publish time.
 
 | Session | Scope | Turns | Fresh input | Cache writes | Cache reads | Output |
 |---|---|---:|---:|---:|---:|---:|
 | `3380085b` | Sprout Kingdom: build + next-day music/boss/feel pass | 344 | 73,070 | 3,117,632 | 80,482,075 | 1,435,600 |
 | `3750ea21` | Overgrown: build + bug-fix rounds + publishing | 777 | 168,106 | 4,597,303 | 408,033,653 | 2,083,309 |
-| **Total** | | **1,121** | **241,176** | **7,714,935** | **488,515,728** | **3,518,909** |
+| `9e4e4faf` | Seedrunner: full build, QA suites, publishing | 440 | 65,294 | 1,071,781 | 103,360,010 | 835,109 |
+| **Total** | | **1,561** | **306,470** | **8,786,716** | **591,875,738** | **4,354,018** |
+
+(The Overgrown session log later grew past its published row — the same
+session went on to write Seedrunner's spec and build plan, ~124 more turns
+and ~117k more output. Those planning tokens are honestly part of
+Seedrunner's cost story; they're just logged under generation 2's session.)
 
 **Cost, two ways** — API list pricing for Fable 5 is
 [$10 / M input and $50 / M output](https://www.anthropic.com/claude/fable),
@@ -113,8 +157,9 @@ with prompt caching at the standard 1.25× to write and 0.1× to read:
 |---|---:|---:|---:|---:|---:|
 | Sprout Kingdom session | $0.73 | $38.97 | $80.48 | $71.78 | **≈ $192** |
 | Overgrown session | $1.68 | $57.47 | $408.03 | $104.17 | **≈ $571** |
-| **Both, API-equivalent** | | | | | **≈ $763** |
-| Same usage without caching | | | | | ≈ $5,140 |
+| Seedrunner session | $0.65 | $13.40 | $103.36 | $41.76 | **≈ $159** |
+| **All three, API-equivalent** | | | | | **≈ $922** |
+| Same usage without caching | | | | | ≈ $6,230 |
 | Actual cost on a Claude Max 20x subscription | | | | | flat monthly fee |
 
 Notes: output tokens include `xhigh`'s extended thinking, which is a big part
@@ -123,9 +168,11 @@ long agentic sessions re-read their full context every turn — caching cut the
 would-be bill by ~85%. Subscription list prices at time of writing are on
 [claude.com/pricing](https://claude.com/pricing) (Pro from $17/mo, Max tiers
 from $100/mo). And "flat monthly fee" is not "free": Max plans budget real
-capacity — these two games consumed **38% of the plan's available Fable 5
-usage for the current window** (which resets July 7). Two complete games for
-roughly a third of one usage window is the actual subscription-side price.
+capacity — the first two games consumed **38% of the plan's available Fable 5
+usage for the current window** (which resets July 7), and Seedrunner's
+session added roughly another 835k output tokens — about 40% of what
+Overgrown took — on the same window. A complete trilogy for well under one
+usage window is the actual subscription-side price.
 
 **Model performance context** (from Anthropic's
 [Fable 5 page](https://www.anthropic.com/claude/fable) and the
@@ -161,8 +208,8 @@ trips them it can be **blocked and rerouted to Claude Opus 4.8**. A game
 build is full of vocabulary a classifier could misread — "kill the boss,"
 weapons, damage, "attack patterns" — so it's fair to ask whether parts of
 these games were quietly built by Opus 4.8 instead. What the session logs
-can attest: every one of the **1,158 assistant turns across both sessions
-reported `claude-fable-5`** in its response metadata, none reported
+can attest: every one of the **1,683 assistant turns across all three
+sessions reported `claude-fable-5`** in its response metadata, none reported
 `claude-opus-4-8`, and the documented reroute behavior is accompanied by a
 user notification — which never appeared. No refusals or blocks were hit in
 either session (the classifiers target real-world harm capability, e.g.
@@ -171,13 +218,17 @@ response metadata is all any client-side harness can see — neither the
 tooling nor the model itself can independently verify which weights actually
 served a given token.
 
-One more honest caveat: at the time of writing, **no human has played either
-game end-to-end**. Every "verified completable" claim comes from Fable's own
-QA — reachability verifiers, 111 automated checks, and scripted bot
-playthroughs of every boss. Early human contact has already found and fixed
-real issues the automation modeled wrong (a sealed wall-jump shaft, updrafts
-that couldn't lift, a Retina rendering bug). The gap between "machine-proven"
-and "actually fun for hands on keys" is part of what this experiment measures.
+One more honest caveat: at the time of writing, **no human has played any of
+the three games end-to-end**. Every "verified completable" claim comes from
+Fable's own QA — reachability verifiers, 891 automated checks, scripted bot
+playthroughs of every boss and every Sowing Run. Early human contact with the
+first two games already found and fixed real issues the automation modeled
+wrong (a sealed wall-jump shaft, updrafts that couldn't lift, a Retina
+rendering bug); Seedrunner tries to close that class of bug by making its
+verifier play the real simulation with human-speed reactions, but "the bot
+had a fair line through it" still isn't the same claim as "it feels good to
+play." The gap between "machine-proven" and "actually fun for hands on keys"
+is part of what this experiment measures.
 
 ## Running locally
 
@@ -187,14 +238,15 @@ cd fable-games-test
 python3 -m http.server 8378
 # original: http://localhost:8378/sprout-kingdom/
 # sequel:   http://localhost:8378/overgrown/
+# finale:   http://localhost:8378/seedrunner/
 ```
 
-No server handy? `overgrown/standalone.html` is the whole sequel in a single
-file — double-click it. (The modular `overgrown/index.html` needs http(s)
-because browsers block ES-module loading over `file://`; rebuild the
-standalone after code changes with `node tools/build-standalone.js`, which
-needs `npm i -g esbuild`.) The original game is classic scripts and runs
-from `file://` as-is.
+No server handy? `overgrown/standalone.html` and `seedrunner/standalone.html`
+are each a whole game in a single file — double-click them. (The modular
+`index.html` versions need http(s) because browsers block ES-module loading
+over `file://`; rebuild a standalone after code changes with
+`node tools/build-standalone.js`, which needs `npm i -g esbuild`.) The
+original game is classic scripts and runs from `file://` as-is.
 
 ## QA
 
@@ -208,10 +260,18 @@ node tools/verify-levels.js    # reachability, all 23 rooms
 node tools/sim-probe.js        # 86 headless mechanics + boss probes
 node tools/browser-test.js     # 19 Playwright flows (server on :8378)
 node tools/mechanics-test.js   # real-keyboard input checks
+
+cd ../seedrunner
+node tools/verify-chunks.js    # 696 reaction-limited bot playthroughs: every
+                               # chunk × speed tier × entry lane, all 6 runs,
+                               # 3 endless seeds — zero problems required
+node tools/sim-probe.js        # 38 frame-data probes incl. model-vs-sim honesty
+node tools/browser-test.js     # 36 Playwright flows (server on :8378)
+node tools/reaction-audit.js   # human-reaction-window distribution per run
 ```
 
 ---
 
-Built by Claude (Fable 5) over two sessions in July 2026, from prompts by
+Built by Claude (Fable 5) over three sessions in July 2026, from prompts by
 [@jason-c-dev](https://github.com/jason-c-dev). The prompts are in the repo;
 everything else grew from them.

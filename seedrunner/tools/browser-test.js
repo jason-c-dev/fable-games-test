@@ -6,10 +6,13 @@
 
 import { createRequire } from 'module';
 import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 const require = createRequire(execSync('npm root -g').toString().trim() + '/');
 const { chromium } = require('playwright');
 
 const BASE = 'http://localhost:8378/seedrunner/index.html';
+const STANDALONE = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', 'standalone.html');
 let pass = 0, fail = 0;
 const filter = process.argv[2];
 const out = [];
@@ -131,7 +134,7 @@ if (!filter || 'progression-persistence'.includes(filter)) {
 }
 
 if (!filter || 'standalone-file'.includes(filter)) {
-  const page = await fresh('file:///Users/claude/dev/sprout-kingdom/seedrunner/standalone.html');
+  const page = await fresh(STANDALONE);
   const mode = await page.evaluate(() => window.SR?.flow?.mode);
   check('standalone.boots', mode === 'title', `mode=${mode}`);
   const frameA = await page.evaluate(() => window.SR.frame);
