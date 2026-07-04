@@ -75,6 +75,72 @@ Level authoring invariants live at the top of `js/sim/level.js`; if you change
 jump/dash physics in `config.js`, update the constants at the top of
 `tools/verify-levels.js` to match.
 
+## About the prompt
+
+Overgrown grew from [`platformer2-prompt.md`](platformer2-prompt.md) — a
+~1,600-word sequel brief written after the original shipped. Its most
+consequential choices, with receipts:
+
+**It banned the easy engine.** The tech section allows PixiJS for rendering
+but draws a hard line at physics:
+
+> *"Keep the simulation your own: fixed-timestep physics (60Hz) fully
+> decoupled from rendering, with interpolated rendering… PixiJS draws; it
+> does not decide game logic. No physics engine — platformer feel dies in
+> general-purpose physics libraries."*
+
+That one paragraph is why the whole simulation is plain, Node-importable
+JavaScript — which in turn is why 86 headless probes can drive the *real*
+player through the *real* levels without a browser. The QA story falls
+straight out of the architecture the prompt demanded.
+
+**It named the parry as a system, not a move.** The combat spec reads like a
+fighting-game design doc:
+
+> *"A dedicated button with a tight (~8 frame) window; a successful parry
+> freezes time for a beat, reflects projectiles at the attacker, staggers
+> melee enemies, and refunds your air dash. Bosses have telegraphed parryable
+> attacks (flagged by a glint + sound) as their core rhythm."*
+
+Window size, reward list, telegraph language, and boss integration — all
+specified. The final Bramble duel ("parry timing is the win condition") only
+works because every boss taught the same glint-parry-punish grammar first.
+
+**It made the sequel's movement a verifier problem.** The level-design bar
+explicitly connects new verbs to QA:
+
+> *"The original's chunked-ASCII DSL and its headless reachability verifier
+> are the proven pattern — rebuild them for the new movement model (dash,
+> wall jump, and pogo dramatically change the reachability graph; encode them
+> as edges)."*
+
+This was prescient: the two shipped level bugs found by early human play were
+exactly the cases where the verifier's model diverged from the sim (a jump
+edge that tunneled through walls; updrafts modeled as lifting when the sim's
+lift lost to gravity). The fix in both cases followed the prompt's own logic
+further — encode reality as edges, then *prove the edges against the real
+sim* with scripted reality probes.
+
+**It gated progress on feel.** *"Renderer + simulation + movement gym first
+(a test level to tune feel — do not proceed until dash/wall-jump/pogo feel
+great), then the combat gym…"* — the movement and combat gyms the prompt
+required became the Training Grove, which shipped to players as the tutorial.
+
+**It kept the self-contained discipline at HD fidelity.** *"No external
+assets of any kind… All art is generated in code at load time… rig characters
+as skeletal hierarchies of parts animated with keyframes + easing."* Every
+gradient, rim light, boss silhouette and adaptive music layer is code — the
+same constraint as the original, executed at a very different quality bar.
+
+**Testing honesty:** as with the original, everything here is verified by
+automation — the occlusion-aware level verifier, 86 sim probes (including
+scripted kills of all four bosses and a parry-only Bramble duel), 19 browser
+flow tests and 6 real-keyboard checks — plus early spot play. **No human has
+yet completed a full playthrough.** The first hour of real human contact
+found a sealed shaft, lift-less updrafts and a Retina scaling bug that all of
+the above had missed; assume more such gaps exist until someone rolls
+credits by hand.
+
 ## Known trims (deliberate)
 
 - Bloom is glow-sprite based (additive halos), not a bright-pass shader chain.

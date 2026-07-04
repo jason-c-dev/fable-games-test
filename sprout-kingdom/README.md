@@ -78,3 +78,60 @@ bridges). Browser tests confirmed all 20 levels load and play, all four bosses
 can be damaged and defeated through their intended mechanics, secret exits
 unlock their shortcut paths, and the title → map → level → clear → credits flow
 works end to end at 60fps with zero console errors.
+
+## About the prompt
+
+The game grew from [`platformer-prompt.md`](platformer-prompt.md) — a single
+~1,100-word build brief. In hindsight, a handful of its clauses did most of
+the work of making the result an actual game rather than a demo:
+
+**It pinned down *feel* before features.** The prompt's core-physics section
+is explicit and numeric where it matters:
+
+> *"Momentum-based movement: walk → run acceleration, skidding when reversing
+> at speed, shorter/taller jumps based on button hold time, higher jump apex
+> when running. Coyote time (~5 frames) and jump buffering (~5 frames)."*
+
+Naming coyote time and jump buffering with frame counts turned "make it feel
+good" from taste into spec. Everything else in a platformer sits on top of
+whether those five lines are right.
+
+**It demanded the game test itself.** The process section is the most
+load-bearing paragraph in the file:
+
+> *"Build QA tooling as you go and keep it green: a headless reachability
+> verifier for every level (goal, checkpoint, every Dew Star, every door
+> reachable under conservative jump physics), the song-alignment checker,
+> browser-driven playtests of all levels and full boss fights, and focused
+> mechanics probes…"*
+
+Twenty hand-authored ASCII levels invite twenty typos. The verifier caught
+unreachable stars and impossible gaps at authoring time instead of at play
+time, and it's the reason later tuning passes (physics, new mechanics) could
+be made without silently breaking old levels.
+
+**It legislated against boilerplate bosses.** Rather than "add four bosses,"
+the prompt said:
+
+> *"The fights must not share a skeleton: give each boss its own vulnerability
+> logic, not four variations of 'wait for the window, stomp three times.'
+> Punish passive play… and reward aggression with a skill-based shortcut."*
+
+That single constraint produced four genuinely different fights instead of
+one fight wearing four hats.
+
+**It forced order-of-operations.** *"Engine + physics feel first (build a
+test level and tune it until movement feels great), then… World 1 complete
+end-to-end including its boss, then remaining worlds, then polish"* — building
+one vertical slice before scaling out meant every later level was authored
+against a finished, tuned movement model.
+
+**It made the soundtrack a requirement, not an afterthought** — down to duty
+cycles, vibrato, an echo bus for the cave world, and a headless checker for
+song alignment. "Treat the music as a real soundtrack, not a placeholder" is
+the difference between three beeps and four world themes.
+
+**Testing honesty:** at the time of writing, everything above has been
+verified by the game's own automated QA (the verifier, browser playthroughs,
+mechanics probes) plus Fable's scripted bot runs — **not yet by a full human
+playthrough**. Automation proves completability; only hands on keys prove fun.
