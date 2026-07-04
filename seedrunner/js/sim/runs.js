@@ -13,7 +13,20 @@ export const GYM_RUN = {
   tide: { creepBase: 0.05, creepPerTier: 0 },
 };
 
-export const RUNS = [];           // campaign runs land in P3/P4/P6
+export const RUNS = [
+  {
+    id: 'run1', name: 'Sowing Run I — Meadow Seedway', kind: 'campaign', biome: 'meadow',
+    world: 0, seedName: 'the Dawn Seed',
+    chunks: [
+      'pad-20', 'm-tut-run', 'm-tut-jump', 'm-tut-lane', 'm-tut-slide', 'm-hop-1',
+      'cp-25', 'm-tut-dash', 'm-tut-parry', 'm-seed', 'm-hop-2', 'm-weave',
+      'm-gap-hop', 'm-breather', 'm-parry-1', 'm-slide-row', 'm-ramp-flow', 'm-mix-1',
+      'finish-45',
+    ],
+    speedStart: 10, speedEnd: 12.5,
+    tide: { creepBase: 0.08, creepPerTier: 0.04 },
+  },
+];
 
 // endless: verified-chunk composition, biome rotation, no immediate repeats
 export function endlessComposer(world) {

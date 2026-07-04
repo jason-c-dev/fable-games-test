@@ -178,18 +178,28 @@ export class Bot {
     if (this._switchPlan) return;
     const p = this.world.player;
     const span = [threat.d - Math.max(8, speed * 0.8), (threat.dEnd ?? threat.d) + 6];
-    const options = [];
     for (const dir of [-1, 1]) {
       const target = p.lane + dir;
       if (target < -1 || target > 1) continue;
-      if (this._laneClear(target, span[0], span[1])) options.push(dir);
+      if (this._laneClear(target, span[0], span[1])) {
+        this._switchPlan = { dir, byD: threat.d };
+        return;
+      }
     }
-    // both neighbours blocked from the middle: hop across via whichever
-    // frees up first (verifier-authored chunks always leave a path)
-    if (!options.length && p.lane !== 0) {
-      if (this._laneClear(0, span[0], span[1])) options.push(-Math.sign(p.lane));
+    // no clear neighbour: head for a clear FAR lane, leaving lead time for
+    // two switches — after the first lands, replanning chains the second
+    const far = -p.lane || null;             // from an edge lane, far = other edge... from C there is none
+    for (const dir of [-1, 1]) {
+      const target = p.lane + dir * 2;
+      if (target < -1 || target > 1) continue;
+      if (this._laneClear(target, span[0], span[1])) {
+        this._switchPlan = { dir, byD: threat.d - speed * (LANES.switchFrames + 6) * STEP };
+        return;
+      }
     }
-    if (options.length) this._switchPlan = { dir: options[0], byD: threat.d };
+    if (far !== null && this._laneClear(0, span[0], span[1])) {
+      this._switchPlan = { dir: -Math.sign(p.lane), byD: threat.d };
+    }
   }
 
   _dewGreed(held, speed) {
