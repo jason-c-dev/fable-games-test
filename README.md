@@ -134,12 +134,38 @@ unattended" — Stripe's testing line was that it "compressed months of
 engineering into days." Fable 5 and Mythos 5 share the same underlying model;
 Fable is the generally available variant with additional safety measures.
 
-**Why `xhigh`?** (experimenter's note): the accuracy-vs-cost curve made
-`xhigh` look like the best game-quality-per-dollar point below the top
-effort tiers, which get steeply more expensive per marginal point of
-accuracy. Honest caveat: plain `high` was never tested for this project and
-may well be the better price/performance point overall — the curve suggests
-FrontierCode-class coding holds up surprisingly far down the effort ladder.
+**Why `xhigh`?** (experimenter's note): the FrontierCode accuracy-vs-cost
+curve below made `xhigh` look like the knee of the curve — on the hardest-50
+"diamond" subset, Fable 5 at `xhigh` scores ≈29% at ≈$13 mean cost per task,
+while `max` buys only ≈2 more points for roughly 50% more cost per task.
+(For scale: Opus 4.8 *tops out* around 13% at its own `xhigh`, below Fable 5's
+`low`.) Honest caveat: plain `high` was never tested for this project and may
+well be the better price/performance point overall — it sits at ≈24% for
+≈$10/task on the same chart, and FrontierCode-class coding clearly holds up
+surprisingly far down the effort ladder.
+
+<p align="center">
+<a href="https://www.anthropic.com/news/claude-fable-5-mythos-5"><img src="media/frontiercode-accuracy-vs-cost.webp" width="720" alt="FrontierCode: accuracy vs cost — Claude Fable 5 across effort levels vs Claude Opus 4.8 and GPT-5.5"></a>
+<br><sup>FrontierCode accuracy vs mean cost per task, across reasoning-effort levels. Source: <a href="https://www.anthropic.com/news/claude-fable-5-mythos-5">Anthropic, Fable 5 / Mythos 5 announcement</a>.</sup>
+</p>
+
+**A note on Fable 5's safety controls.** Fable 5 ships with
+[additional dual-use safeguards](https://www.anthropic.com/news/redeploying-fable-5)
+— layered classifiers with a deliberately large safety margin (Anthropic
+accepts more false positives on this model by design), and when a request
+trips them it can be **blocked and rerouted to Claude Opus 4.8**. A game
+build is full of vocabulary a classifier could misread — "kill the boss,"
+weapons, damage, "attack patterns" — so it's fair to ask whether parts of
+these games were quietly built by Opus 4.8 instead. What the session logs
+can attest: every one of the **1,158 assistant turns across both sessions
+reported `claude-fable-5`** in its response metadata, none reported
+`claude-opus-4-8`, and the documented reroute behavior is accompanied by a
+user notification — which never appeared. No refusals or blocks were hit in
+either session (the classifiers target real-world harm capability, e.g.
+offensive cyber, not fantasy combat). The honest limit of that evidence:
+response metadata is all any client-side harness can see — neither the
+tooling nor the model itself can independently verify which weights actually
+served a given token.
 
 One more honest caveat: at the time of writing, **no human has played either
 game end-to-end**. Every "verified completable" claim comes from Fable's own
