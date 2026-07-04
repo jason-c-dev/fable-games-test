@@ -17,7 +17,7 @@ import { World } from '../js/sim/world.js';
 import { Bot } from '../js/sim/bot.js';
 import { allChunks, getChunk, laneX } from '../js/sim/chunks.js';
 import '../js/sim/chunklib.js';
-import { RUNS, GYM_RUN } from '../js/sim/runs.js';
+import { RUNS, GYM_RUN, ENDLESS_RUN } from '../js/sim/runs.js';
 import { SPEED, PLAYER, OBSTACLES, LANES } from '../js/config.js';
 import * as cap from '../js/sim/capabilities.js';
 
@@ -171,6 +171,28 @@ for (const def of [GYM_RUN, ...RUNS]) {
   if (onlyRun && def.id !== onlyRun) continue;
   if (onlyChunk) continue;
   verifyRun(def);
+}
+
+// endless: the human-reaction bot must survive 3+ minutes on several seeds
+// at escalating speed. Dying to the Tide after that is the difficulty
+// curve working; dying to an obstacle line ever is a composition bug.
+if (!onlyChunk && !onlyRun) {
+  for (const seed of [101, 202, 303]) {
+    const w = new World(ENDLESS_RUN, { seed });
+    const bot = new Bot(w, { reaction: REACTION });
+    const target = 180 * 60;
+    let f = 0;
+    for (; f < target + 60; f++) {
+      w.step(bot.step());
+      if (w.dead) break;
+    }
+    const mins = (f / 3600).toFixed(1);
+    if (w.dead && f < target) {
+      problem(`endless seed ${seed}`, `bot died (${w.deathCause}) at ${mins}min, d=${w.player.d.toFixed(0)}, speed=${w.speedAt(w.player.d).toFixed(1)}`);
+    } else if (verbose) {
+      console.log(`  ok endless seed ${seed}: ${mins}min, d=${w.player.d.toFixed(0)}, stumbles=${w.stumbles}, speed=${w.speedAt(w.player.d).toFixed(1)}`);
+    }
+  }
 }
 
 if (problems.length) {

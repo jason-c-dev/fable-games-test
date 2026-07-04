@@ -100,7 +100,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'm-hop-2', biome: 'meadow', tiers: [1, 4], len: 50, lines: `
+  id: 'm-hop-2', biome: 'meadow', tiers: [1, 5], len: 50, lines: `
     block L 12
     block C 12
     dew R 8..16 step=2.5
@@ -112,7 +112,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'm-slide-row', biome: 'meadow', tiers: [0, 3], len: 50, lines: `
+  id: 'm-slide-row', biome: 'meadow', tiers: [0, 5], len: 50, lines: `
     arch C 12
     dew C 9..17 step=2
     arch L 26
@@ -123,7 +123,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'm-gap-hop', biome: 'meadow', tiers: [0, 3], len: 55, lines: `
+  id: 'm-gap-hop', biome: 'meadow', tiers: [0, 5], len: 55, lines: `
     gap C 12 len=4
     ${dewArc(11, 'C', 6.5)}
     gap L 28 len=4.5
@@ -143,7 +143,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'm-parry-1', biome: 'meadow', tiers: [1, 4], len: 50, lines: `
+  id: 'm-parry-1', biome: 'meadow', tiers: [1, 6], len: 50, lines: `
     barrier C 14
     dew C 16..22 step=2
     barrier L 32
@@ -152,7 +152,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'm-weave', biome: 'meadow', tiers: [1, 4], len: 55, lines: `
+  id: 'm-weave', biome: 'meadow', tiers: [1, 6], len: 55, lines: `
     block L 10
     block C 14
     dew R 8..18 step=2.5
@@ -176,7 +176,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'm-mix-2', biome: 'meadow', tiers: [2, 5], len: 60, lines: `
+  id: 'm-mix-2', biome: 'meadow', tiers: [2, 6], len: 60, lines: `
     barrier R 10
     block C 16
     dew L 12..20 step=2.5
@@ -220,7 +220,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'c-dark-weave', biome: 'cavern', tiers: [1, 4], len: 55, lines: `
+  id: 'c-dark-weave', biome: 'cavern', tiers: [1, 5], len: 55, lines: `
     block C 10
     dew L 8..14 step=2.5
     lantern C 24
@@ -232,7 +232,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'c-crystal-gap', biome: 'cavern', tiers: [1, 4], len: 55, lines: `
+  id: 'c-crystal-gap', biome: 'cavern', tiers: [1, 5], len: 55, lines: `
     lantern C 12
     gap C 14 len=4.5
     ${dewArc(13, 'C', 7)}
@@ -243,7 +243,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'c-arch-run', biome: 'cavern', tiers: [1, 4], len: 50, lines: `
+  id: 'c-arch-run', biome: 'cavern', tiers: [1, 5], len: 50, lines: `
     lantern C 14
     arch L 16
     arch C 16
@@ -255,7 +255,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'c-parry-glow', biome: 'cavern', tiers: [1, 5], len: 50, lines: `
+  id: 'c-parry-glow', biome: 'cavern', tiers: [1, 6], len: 50, lines: `
     barrier C 14
     dew C 16..22 step=2
     barrier L 34
@@ -265,7 +265,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'c-mix', biome: 'cavern', tiers: [2, 5], len: 60, lines: `
+  id: 'c-mix', biome: 'cavern', tiers: [2, 6], len: 60, lines: `
     lantern C 10
     block C 12
     dew L 8..16 step=2.5
@@ -298,7 +298,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'l-wind-1', biome: 'cloudline', tiers: [1, 5], len: 55, lines: `
+  id: 'l-wind-1', biome: 'cloudline', tiers: [1, 6], len: 55, lines: `
     wind A 8 len=20 dir=-1
     block C 14
     ${dewArc(11, 'C', 7)}
@@ -309,7 +309,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'l-gap-span', biome: 'cloudline', tiers: [1, 4], len: 55, lines: `
+  id: 'l-gap-span', biome: 'cloudline', tiers: [1, 5], len: 55, lines: `
     gap L 10 len=5
     gap C 10 len=5
     dew R 6..14 step=2.5
@@ -321,7 +321,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'l-wind-gap', biome: 'cloudline', tiers: [2, 5], len: 55, lines: `
+  id: 'l-wind-gap', biome: 'cloudline', tiers: [2, 6], len: 55, lines: `
     wind A 8 len=26 dir=1
     gap C 16 len=4
     ${dewArc(15, 'C', 7)}
@@ -340,7 +340,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'l-arch-wind', biome: 'cloudline', tiers: [2, 5], len: 50, lines: `
+  id: 'l-arch-wind', biome: 'cloudline', tiers: [2, 6], len: 50, lines: `
     arch C 12
     dew C 9..17 step=2
     wind A 22 len=18 dir=1
@@ -351,7 +351,7 @@ defineChunk({
   `,
 });
 defineChunk({
-  id: 'l-parry-1', biome: 'cloudline', tiers: [2, 5], len: 45, lines: `
+  id: 'l-parry-1', biome: 'cloudline', tiers: [2, 6], len: 45, lines: `
     barrier C 14
     dew C 16..22 step=2
     barrier R 32
