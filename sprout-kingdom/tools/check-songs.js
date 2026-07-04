@@ -2,8 +2,9 @@
 // note tokens in a sane frequency range, valid drum tokens.
 const fs = require('fs');
 const vm = require('vm');
+const path = require('path');
 
-const SRC = '/Users/claude/dev/sprout-kingdom/js/audio.js';
+const SRC = path.join(__dirname, '..', 'js', 'audio.js');
 const ctx = { window: {}, setInterval: () => 0, clearInterval: () => {}, setTimeout: () => 0, console };
 vm.createContext(ctx);
 const { SONGS, parseTrack, noteFreq } = vm.runInContext(

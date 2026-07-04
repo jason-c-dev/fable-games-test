@@ -16,6 +16,7 @@ tile, sound and song in both games is generated in code.
 |---|---|---|---|
 | 🌱 **Sprout Kingdom** | [play it](https://jason-c-dev.github.io/fable-games-test/sprout-kingdom/) | [`sprout-kingdom/`](sprout-kingdom/) | [`platformer-prompt.md`](sprout-kingdom/platformer-prompt.md) |
 | 🗡️ **Sprout Kingdom: Overgrown** | [play it](https://jason-c-dev.github.io/fable-games-test/overgrown/) | [`overgrown/`](overgrown/) | [`platformer2-prompt.md`](overgrown/platformer2-prompt.md) |
+| 🌰 **Sprout Kingdom: Seedrunner** | *generation 3 — spec'd, build pending* | [`seedrunner/`](seedrunner/) | [`runner3-prompt.md`](seedrunner/runner3-prompt.md) · [build plan](seedrunner/PLAN.md) |
 
 ---
 
