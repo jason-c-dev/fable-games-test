@@ -121,7 +121,10 @@ of why the output column is heavy; cache reads dominate raw volume because
 long agentic sessions re-read their full context every turn — caching cut the
 would-be bill by ~85%. Subscription list prices at time of writing are on
 [claude.com/pricing](https://claude.com/pricing) (Pro from $17/mo, Max tiers
-from $100/mo).
+from $100/mo). And "flat monthly fee" is not "free": Max plans budget real
+capacity — these two games consumed **38% of the plan's available Fable 5
+usage for the current window** (which resets July 7). Two complete games for
+roughly a third of one usage window is the actual subscription-side price.
 
 **Model performance context** (from Anthropic's
 [Fable 5 page](https://www.anthropic.com/claude/fable) and the
