@@ -21,7 +21,7 @@ export const BIOME_LOOK = {
     props: { trunk: 0x4a5a78, leaf: 0x33445e, accent: 0x66e0ff, crystal: 0x7fd8ff },
   },
   cloudline: {
-    ground: 0xbcd4ec, groundDrop: -26,      // the Spans hang over cloud-void
+    ground: 0xdceaf8, groundDrop: -26,      // the Spans hang over cloud-void
     sky: 0xcfe4f8, fogColor: 0xdceaf8, fogNear: 34, fogFar: 120,
     hemiSky: 0xffffff, hemiGround: 0x93a8c0, hemiI: 1.15,
     sunColor: 0xfff8e0, sunI: 1.8, sunPos: [-6, 8, -3],

@@ -20,7 +20,11 @@ export class World {
 
     this.player = new Player();
     this.track = new Track();
-    for (const c of runDef.chunks || []) this.track.append(c);
+    // chunk entries: 'id' or ['id', biomeOverride] for mixed-biome runs
+    for (const c of runDef.chunks || []) {
+      if (Array.isArray(c)) this.track.append(c[0], c[1]);
+      else this.track.append(c);
+    }
     if (runDef.kind === 'endless') this._extend();
 
     this.tide = new Tide(this);

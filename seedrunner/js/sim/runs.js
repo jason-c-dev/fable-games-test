@@ -26,6 +26,53 @@ export const RUNS = [
     speedStart: 10, speedEnd: 12.5,
     tide: { creepBase: 0.08, creepPerTier: 0.04 },
   },
+  {
+    id: 'run2', name: 'Sowing Run II — Deeproot Cavern', kind: 'campaign', biome: 'cavern',
+    world: 1, seedName: 'the Ember Seed',
+    chunks: [
+      'pad-20', 'c-intro', 'c-lantern-1', 'c-arch-run', 'c-dark-weave',
+      ['cp-25', 'cavern'], ['m-seed', 'cavern'], 'c-crystal-gap', 'c-parry-glow',
+      'c-breather', 'c-dark-weave', 'c-mix', 'c-arch-run', ['finish-45', 'cavern'],
+    ],
+    speedStart: 11, speedEnd: 13.5,
+    tide: { creepBase: 0.1, creepPerTier: 0.05 },
+  },
+  {
+    id: 'run3', name: 'Sowing Run III — Cloudline Spans', kind: 'campaign', biome: 'cloudline',
+    world: 2, seedName: 'the Sky Seed',
+    chunks: [
+      'pad-20', 'l-intro', 'l-gap-span', 'l-wind-1', 'l-ramp-soar',
+      ['cp-25', 'cloudline'], ['m-seed', 'cloudline'], 'l-wind-gap', 'l-arch-wind',
+      'l-breather', 'l-parry-1', 'l-gap-span', 'l-wind-1', ['finish-45', 'cloudline'],
+    ],
+    speedStart: 11.5, speedEnd: 14,
+    tide: { creepBase: 0.11, creepPerTier: 0.05 },
+  },
+  {
+    id: 'run4', name: 'Sowing Run IV — Bramble Wastes', kind: 'campaign', biome: 'wastes',
+    world: 3, seedName: 'the Thorn Seed',
+    chunks: [
+      'pad-20', 'w-intro', 'w-thorn-field', 'w-gauntlet-1', 'w-weave-2',
+      ['cp-25', 'wastes'], ['m-seed', 'wastes'], 'w-gap-rot', 'w-gauntlet-2',
+      'w-breather', 'w-mix-3', 'w-thorn-field', ['finish-45', 'wastes'],
+    ],
+    speedStart: 12, speedEnd: 15,
+    tide: { creepBase: 0.12, creepPerTier: 0.06 },
+  },
+  {
+    id: 'run5', name: 'Sowing Run V — The Long Seedway', kind: 'campaign', biome: 'meadow',
+    world: 0, seedName: 'the Heart Seed',
+    chunks: [
+      'pad-20', 'm-hop-2', 'm-weave', 'm-mix-1',
+      ['c-lantern-1', 'cavern'], ['c-crystal-gap', 'cavern'], ['c-parry-glow', 'cavern'],
+      ['cp-25', 'cavern'], ['m-seed', 'cloudline'],
+      ['l-wind-1', 'cloudline'], ['l-wind-gap', 'cloudline'], ['l-gap-span', 'cloudline'],
+      ['w-thorn-field', 'wastes'], ['w-gauntlet-2', 'wastes'], ['w-mix-3', 'wastes'],
+      ['finish-45', 'meadow'],
+    ],
+    speedStart: 13, speedEnd: 16.5,
+    tide: { creepBase: 0.13, creepPerTier: 0.06 },
+  },
 ];
 
 // endless: verified-chunk composition, biome rotation, no immediate repeats
