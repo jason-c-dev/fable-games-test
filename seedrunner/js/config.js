@@ -40,7 +40,8 @@ export const PLAYER = {
   // stumble (first hit) and recovery
   stumbleFrames: 55,
   stumbleSpeedMult: 0.55,
-  stumbleIframes: 80,     // can't be re-stumbled instantly
+  stumbleIframes: 26,     // can't be re-stumbled instantly
+  fragileFrames: 150,     // a second hit inside this window ends the run
 
   // parry
   parryWindowFrames: 12,  // press-to-impact window (~200 ms)
@@ -81,6 +82,20 @@ export const SCORE = {
   parryDew: 8,            // banked burst on a bloom parry
   chainStep: 20,          // dew chain milestone size
   nearMissWindow: 0.35,   // meters of clearance that counts as a near miss
+};
+
+// -------------------------------------------------------------- obstacles --
+export const OBSTACLES = {
+  blockH: 1.05,           // jump over
+  blockDepth: 1.0,
+  archY: 0.85,            // overhead bar bottom edge — slide under
+  archDepth: 2.4,
+  barrierDepth: 0.5,      // rot barrier — parry or dash
+  rampBoost: 9.2,         // vy granted when crossing a ramp lip
+  rampDepth: 2.0,
+  dewR: 0.9,              // collect radius
+  windAccel: 12,          // m/s^2 lateral drift while airborne in a wind zone
+  lanternR: 9,            // light pool radius in the cavern dark
 };
 
 export const BIOMES = ['meadow', 'cavern', 'cloudline', 'wastes'];
