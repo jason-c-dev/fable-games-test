@@ -11,6 +11,7 @@ import { loadGame, saveGame, DEFAULT_SETTINGS, freshProgress } from './core/save
 import { Renderer } from './render/renderer.js';
 import { Hud } from './ui/hud.js';
 import { Flow } from './ui/screens.js';
+import { Audio } from './audio/audio.js';
 
 function boot() {
   const uiRoot = document.getElementById('ui');
@@ -37,9 +38,14 @@ function boot() {
 
   let world = null;
   let bot = null;
-  let audio = null;        // wired in the audio pass
+
+  const audio = new Audio(settings);
+  const unlockAudio = () => audio.unlock();
+  window.addEventListener('keydown', unlockAudio, { once: true });
+  window.addEventListener('pointerdown', unlockAudio, { once: true });
 
   const flow = new Flow({ uiRoot, input, settings, progress, persist });
+  flow.onSfx = (n) => audio.sfx(n);
 
   flow.onStartRun = (id, opts = {}) => {
     const def = runById(id);
@@ -104,7 +110,7 @@ function boot() {
           renderer.handleEvent(ev, world);
           if (flow.running) {
             hud.handleEvent(ev, world);
-            audio?.handleEvent?.(ev, world);
+            audio.handleEvent(ev, world);
           }
         }
         acc -= STEP;
@@ -122,7 +128,7 @@ function boot() {
       hud.update(world, dtFrames, fpsAvg, renderer);
     }
     flow.update(dtFrames, world);
-    audio?.update?.(world, flow.mode, dtFrames);
+    audio.update(world, flow.mode, world ? world.track.biomeAt(world.player.d) : 'meadow');
 
     fpsAvg = fpsAvg * 0.95 + (1000 / Math.max(dtMs, 0.01)) * 0.05;
   }
@@ -130,13 +136,11 @@ function boot() {
 
   // hooks for headless QA
   window.SR = {
-    renderer, input, hud, flow, settings, progress, persist,
+    renderer, input, hud, flow, settings, progress, persist, audio,
     get world() { return world; },
     get bot() { return bot; },
     get fps() { return fpsAvg; },
     get frame() { return world?.frame ?? 0; },
-    set audio(a) { audio = a; },
-    get audio() { return audio; },
   };
 }
 

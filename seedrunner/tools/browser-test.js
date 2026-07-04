@@ -158,6 +158,28 @@ if (!filter || 'dpr-aspect-matrix-fps'.includes(filter)) {
   }
 }
 
+if (!filter || 'audio-scenes'.includes(filter)) {
+  // 60s automated play across biomes: scenes must switch, console must stay clean
+  const page = await fresh(BASE + '?run=run5&bot=1&seed=3');
+  page.consoleErrors = [];
+  page.on('console', (m) => { if (m.type() === 'error') page.consoleErrors.push(m.text()); });
+  await page.mouse.click(640, 360);         // user gesture unlocks Tone
+  await page.waitForTimeout(1500);
+  const ready = await page.evaluate(() => window.SR.audio.ready);
+  check('audio.unlocks', ready === true, `ready=${ready}`);
+  const scenes = new Set();
+  for (let i = 0; i < 60; i++) {
+    await page.waitForTimeout(1000);
+    const s = await page.evaluate(() => window.SR.audio.music?.sceneKey);
+    if (s) scenes.add(s);
+    if (await page.evaluate(() => window.SR.flow.mode === 'results')) break;
+  }
+  check('audio.scene-switch', [...scenes].filter((s) => s.startsWith('run-')).length >= 2, [...scenes].join(','));
+  check('audio.no-console-errors', page.consoleErrors.length === 0 && page.errors.length === 0,
+    [...page.consoleErrors, ...page.errors].slice(0, 4).join(' | '));
+  await page.close();
+}
+
 await browser.close();
 console.log(out.join('\n'));
 console.log(`\nbrowser-test: ${pass} passed, ${fail} failed`);
